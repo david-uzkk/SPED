@@ -1,5 +1,9 @@
+// LoginScreen.js
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import PasswordInput from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
 
 const LoginScreen = () => {
@@ -8,9 +12,10 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // logica para autenticar o usuário
+    // lógica para autenticar o usuário
     if (username === "123" && password === "123") {
-      navigation.navigate("Home");
+      // Redireciona para a tela Home e substitui a rota de login
+      navigation.replace("Home");
     } else {
       Alert.alert("Credenciais inválidas");
     }
@@ -31,26 +36,18 @@ const LoginScreen = () => {
         <Text style={styles.subtitle}>Sistema de Patrulha Escolar Digital</Text>
       </View>
       <View style={styles.loginBox}>
-        <TextInput
-          style={styles.input}
-          onChangeText={(text) => {
-            const formattedText = text.replace(/[^0-9]/g, "");
-            setUsername(formattedText);
-          }}
+        <Input
           value={username}
+          onChangeText={(text) => setUsername(text.replace(/[^0-9]/g, ""))}
           placeholder="CPF"
-          keyboardType="numeric" 
+          keyboardType="numeric"
         />
-        <TextInput
-          style={styles.input}
-          onChangeText={(text) => setPassword(text)}
+        <PasswordInput
           value={password}
+          onChangeText={(text) => setPassword(text)}
           placeholder="Senha"
-          secureTextEntry
         />
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Entrar</Text>
-        </TouchableOpacity>
+        <Button onPress={handleLogin} title="Entrar" />
         <Text style={styles.helpText} onPress={handleHelpPress}>
           Precisa de ajuda?
         </Text>
@@ -92,29 +89,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     alignItems: "center",
-  },
-  input: {
-    width: "100%",
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 4,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#0D214F",
-    fontSize: 18,
-    textAlign: "center",
-    fontWeight: "bold",
   },
   helpText: {
     marginTop: 20,

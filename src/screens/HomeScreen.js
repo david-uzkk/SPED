@@ -1,18 +1,31 @@
+// HomeScreen.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Header } from 'react-native-elements';
+import { Header, Icon } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import MapView from 'react-native-maps';
+import { DrawerActions, useNavigation } from '@react-navigation/native'; 
+
 
 const HomeScreen = () => {
+  const navigation = useNavigation(); 
+
+  const openMenu = () => {
+    navigation.dispatch(DrawerActions.openDrawer());
+  };
+
+  const goToProfile = () => {
+    navigation.navigate('Profile');
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {/* Barra Superior */}
       <Header
         backgroundColor="#0D214F"
-        leftComponent={<Ionicons name="menu" size={24} color="white" />}
+        leftComponent={<Ionicons name="menu" size={24} color="white" onPress={openMenu} />}
         centerComponent={{ text: 'SPED', style: { color: '#fff', fontSize: 20 } }}
-        rightComponent={<Ionicons name="person-circle-outline" size={24} color="white" />}
+        rightComponent={<Ionicons name="person-circle-outline" size={24} color="white" onPress={goToProfile} />}
       />
 
       {/* Mapa Interativo */}
