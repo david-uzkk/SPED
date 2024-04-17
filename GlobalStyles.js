@@ -12,7 +12,7 @@ export const FontSize = {
 };
 /* Colors */
 export const Color = {
-  colorDarkslateblue_100: "#0d214f",
+  colorDarkslateblue_100: "#091c48",
   colorWhite: "#fff",
 };
 /* border radiuses */

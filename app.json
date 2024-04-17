@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "sped_mobile",
-    "slug": "sped_mobile",
+    "slug": "sped",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
