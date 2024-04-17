@@ -1,13 +1,11 @@
-// OccurrenceScreen.js
-import React, { useRef } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { RNCamera } from 'react-native-camera';
+import { Camera } from 'expo-camera';
 
 const OccurrenceScreen = () => {
-  const cameraRef = useRef(null);
-
-  const handleBarcodeRead = ({ data }) => {
-    // Lógica para lidar com os dados do QR code lido
+  // Função para lidar com a leitura do QR code
+  const handleBarCodeScanned = ({ data }) => {
+    // Aqui você pode lidar com os dados do QR code lido
     console.log('QR Code lido:', data);
   };
 
@@ -20,12 +18,10 @@ const OccurrenceScreen = () => {
 
       {/* Conteúdo Central */}
       <View style={styles.content}>
-        <RNCamera
-          ref={cameraRef}
+        <Camera
           style={styles.camera}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.off}
-          onBarCodeRead={handleBarcodeRead}
+          type={Camera.Constants.Type.back}
+          onBarCodeScanned={handleBarCodeScanned}
         />
         <Text style={styles.scanInstructions}>Aponte para o QR code para iniciar a leitura</Text>
       </View>
@@ -61,12 +57,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   camera: {
-    width: '80%',
-    height: '80%',
+    flex: 1,
+    width: '100%',
   },
   scanInstructions: {
     color: '#fff',
     fontSize: 18,
+    marginTop: 20,
   },
   footer: {
     backgroundColor: '#0D214F',

@@ -1,4 +1,3 @@
-// LoginScreen.js
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import Input from "../components/Input";
@@ -29,6 +28,15 @@ const LoginScreen = () => {
     );
   };
 
+  const formatCPF = (text) => {
+    const cleaned = text.replace(/\D/g, "");
+    const formatted = cleaned.replace(
+      /^(\d{3})(\d{3})(\d{3})(\d{2}).*/,
+      "$1.$2.$3-$4"
+    );
+    return formatted;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -37,8 +45,8 @@ const LoginScreen = () => {
       </View>
       <View style={styles.loginBox}>
         <Input
-          value={username}
-          onChangeText={(text) => setUsername(text.replace(/[^0-9]/g, ""))}
+          value={formatCPF(username)}
+          onChangeText={(text) => setUsername(text)}
           placeholder="CPF"
           keyboardType="numeric"
         />
