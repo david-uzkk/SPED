@@ -1,9 +1,11 @@
+// LoginScreen.js
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import PasswordInput from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
+import api from "../services/api"; // Importando o serviço Axios
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -11,14 +13,47 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // lógica para autenticar o usuário
     if (username === "123" && password === "123") {
-      // Redireciona para a tela Home e substitui a rota de login
+      // Permitindo login com o CPF "123" e senha "123"
+      console.log("Login bem-sucedido como usuário padrão");
       navigation.replace("Home");
     } else {
-      Alert.alert("Credenciais inválidas");
+      // Fazendo a solicitação POST para o endpoint de login usando o serviço Axios
+      api
+        .post("/auth/login", {
+          cpf: username,
+          pass: password,
+        })
+        .then((response) => {
+          // Se a solicitação for bem-sucedida, você pode redirecionar o usuário para a próxima tela ou executar outras ações necessárias
+          console.log("Login bem-sucedido:", response.data);
+          navigation.replace("Home"); // Redireciona para a tela Home após o login
+        })
+        .catch((error) => {
+          // Se ocorrer algum erro durante a solicitação, você pode exibir uma mensagem de erro ao usuário
+          console.error("Erro ao fazer login:", error);
+          Alert.alert("Erro", "Credenciais inválidas");
+        });
     }
   };
+
+  /* const handleLogin = () => {
+    api
+      .post("/auth/login", {
+        cpf: username,
+        pass: password,
+      })
+      .then((response) => {
+        // Se a solicitação for bem-sucedida, você pode redirecionar o usuário para a próxima tela ou executar outras ações necessárias
+        console.log("Login bem-sucedido:", response.data);
+        navigation.replace("Home"); // Redireciona para a tela Home após o login
+      })
+      .catch((error) => {
+        // Se ocorrer algum erro durante a solicitação, você pode exibir uma mensagem de erro ao usuário
+        console.error("Erro ao fazer login:", error);
+        Alert.alert("Erro", "Credenciais inválidas");
+      });
+  }; */
 
   const handleHelpPress = () => {
     Alert.alert(
@@ -28,24 +63,17 @@ const LoginScreen = () => {
     );
   };
 
-  const formatCPF = (text) => {
-    const cleaned = text.replace(/\D/g, "");
-    const formatted = cleaned.replace(
-      /^(\d{3})(\d{3})(\d{3})(\d{2}).*/,
-      "$1.$2.$3-$4"
-    );
-    return formatted;
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>SPED</Text>
-        <Text style={styles.subtitle}>Sistema de Patrulha Escolar Digital</Text>
+        <Text style={styles.subtitle}>
+          Sistema de Patrulha Escolar Digital
+        </Text>
       </View>
       <View style={styles.loginBox}>
         <Input
-          value={formatCPF(username)}
+          value={username}
           onChangeText={(text) => setUsername(text)}
           placeholder="CPF"
           keyboardType="numeric"
