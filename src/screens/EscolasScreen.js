@@ -12,8 +12,9 @@ const EscolaScreen = () => {
   // Dados de exemplo para a lista de escolas
   const escolas = [
     { id: 1, nome: 'Escola A', status: 'verde' },
-    { id: 2, nome: 'Escola B', status: 'laranja' },
-    { id: 3, nome: 'Escola C', status: 'vermelho' },
+    { id: 2, nome: 'Escola B', status: 'amarelo' },
+    { id: 3, nome: 'Escola C', status: 'laranja' },
+    { id: 4, nome: 'Escola D', status: 'branco' },
     // Adicione mais escolas conforme necessário
   ];
 
@@ -30,10 +31,12 @@ const EscolaScreen = () => {
     switch (status) {
       case 'verde':
         return '#00FF00';
+      case 'amarelo':
+        return '#ffff00';
       case 'laranja':
-        return '#FFA500';
-      case 'vermelho':
-        return '#FF0000';
+        return '#ff6400';
+      case 'branco':
+        return '#FFFFFF';
       default:
         return '#000';
     }
