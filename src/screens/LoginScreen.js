@@ -5,55 +5,47 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import PasswordInput from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
-import api from "../services/api"; // Importando o serviço Axios
+import { user_login } from "../services/user_api"; 
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (username === "123" && password === "123") {
-      // Permitindo login com o CPF "123" e senha "123"
-      console.log("Login bem-sucedido como usuário padrão");
-      navigation.replace("Home");
-    } else {
-      // Fazendo a solicitação POST para o endpoint de login usando o serviço Axios
-      api
-        .post("/auth/login", {
-          cpf: username,
-          pass: password,
-        })
-        .then((response) => {
-          // Se a solicitação for bem-sucedida, você pode redirecionar o usuário para a próxima tela ou executar outras ações necessárias
-          console.log("Login bem-sucedido:", response.data);
-          navigation.replace("Home"); // Redireciona para a tela Home após o login
-        })
-        .catch((error) => {
-          // Se ocorrer algum erro durante a solicitação, você pode exibir uma mensagem de erro ao usuário
-          console.error("Erro ao fazer login:", error);
-          Alert.alert("Erro", "Credenciais inválidas");
-        });
+  const handleLogin = async () => {
+    // Verifica se o CPF e a senha não estão vazios
+    if (!username.trim() || !password.trim()) {
+      Alert.alert("Erro", "Por favor, preencha CPF e senha.");
+      return;
     }
-  };
 
-  /* const handleLogin = () => {
-    api
-      .post("/auth/login", {
+    try {
+      const result = await user_login({
         cpf: username,
         pass: password,
-      })
-      .then((response) => {
-        // Se a solicitação for bem-sucedida, você pode redirecionar o usuário para a próxima tela ou executar outras ações necessárias
-        console.log("Login bem-sucedido:", response.data);
-        navigation.replace("Home"); // Redireciona para a tela Home após o login
-      })
-      .catch((error) => {
-        // Se ocorrer algum erro durante a solicitação, você pode exibir uma mensagem de erro ao usuário
-        console.error("Erro ao fazer login:", error);
-        Alert.alert("Erro", "Credenciais inválidas");
+        role: "admin"
       });
-  }; */
+
+      // Se a resposta foi bem-sucedida (status 200)
+      if (result.status === 200) {
+        // Salva o token de acesso (se necessário)
+        // AsyncStorage.setItem('AccessToken', result.data);
+        // Navega para a tela Home
+        navigation.replace("Home");
+      } else {
+        // Se a resposta não foi bem-sucedida, exibe uma mensagem de erro
+        Alert.alert("Erro", result.data.message || "Erro desconhecido durante o login.");
+      }
+    } catch (error) {
+      // Se ocorrer um erro, exibe uma mensagem de erro genérica
+      if (error.response && error.response.data) {
+        Alert.alert("Erro", error.response.data.message || "Erro desconhecido durante o login.");
+      } else {
+        Alert.alert("Erro", "Erro desconhecido durante o login.");
+      }
+      console.error("Erro durante o login:", error);
+    }
+  };  
 
   const handleHelpPress = () => {
     Alert.alert(
