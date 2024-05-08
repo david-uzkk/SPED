@@ -17,3 +17,4 @@ Observação: Certifique-se de ter instalado as dependências de react native [a
 5. Após de iniciar usa o android completamente e o projeto usando o npx expo start aperte “a” no terminal para abrir o app no emulador.
 
 https://youtu.be/dB1YAOlMTUI?t=26
+testeeeeeeee
