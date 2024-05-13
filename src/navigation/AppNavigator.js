@@ -8,7 +8,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import OccurrenceScreen from '../screens/OccurrenceScreen';
 import FormOccurrenceScreen from '../screens/FormOccurrenceScreen';
-import EscolasScreen from '../screens/EscolasScreen';
+import EscolasScreen from '../screens/SchoolsScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();

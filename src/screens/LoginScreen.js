@@ -4,7 +4,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import PasswordInput from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
-import { user_login } from "../services/user_api";
+import { user_login } from "../services/apis";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {

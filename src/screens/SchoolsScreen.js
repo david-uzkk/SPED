@@ -1,46 +1,48 @@
-// EscolaScreen.js
-import React, { useState } from 'react';
+// SchoolsScreen.js
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Modal, TouchableOpacity } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import HorarioModal from '../components/VisitModal';
+import { getSchoolList, fetchSchools } from '../data/Schools'; // Importar a função getSchoolList
 
-const EscolaScreen = () => {
+const SchoolsScreen = () => {
   const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [escolas, setEscolas] = useState([]); // Usar estado para armazenar as escolas
 
-  // Dados de exemplo para a lista de escolas
-  const escolas = [
-    { id: 1, nome: 'Escola A', status: 'verde' },
-    { id: 2, nome: 'Escola B', status: 'amarelo' },
-    { id: 3, nome: 'Escola C', status: 'laranja' },
-    { id: 4, nome: 'Escola D', status: 'branco' },
-    // Adicione mais escolas conforme necessário
-  ];
+  // Carregar as escolas ao iniciar a tela
+  useEffect(() => {
+    const loadSchools = async () => {
+      await fetchSchools(); // Buscar as escolas
+      setEscolas(getSchoolList()); // Atualizar o estado com a lista de escolas
+    };
+    loadSchools();
+  }, []);
 
   // Renderizar cada item da lista de escolas
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.escolaItem} onPress={() => setModalVisible(true)}>
-      <Text style={styles.escolaNome}>{item.nome}</Text>
-      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.status) }]} />
+      <Text style={styles.escolaNome}>{item.name}</Text>
+      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.securityLevel) }]} />
     </TouchableOpacity>
   );
 
   // Obter a cor do status com base na marcação
   const getStatusColor = (status) => {
     switch (status) {
-      case 'verde':
+      case 0:
         return '#00FF00';
-      case 'amarelo':
-        return '#ffff00';
-      case 'laranja':
-        return '#ff6400';
-      case 'branco':
-        return '#FFFFFF';
+      case 1:
+        return '#FFFF00';
+      case 2:
+        return '#FF6400';
+      case 3:
+        return '#000000';
       default:
-        return '#000';
+        return '#000000';
     }
-  };
+  };  
 
   return (
     <View style={styles.container}>
@@ -116,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EscolaScreen;
+export default SchoolsScreen;
