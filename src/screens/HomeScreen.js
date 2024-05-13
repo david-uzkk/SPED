@@ -72,6 +72,12 @@ const HomeScreen = () => {
         </MapView>
       </View>
 
+      {/* Barra Inferior */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>GCM Caraguatatuba - SP</Text>
+        <Text style={styles.footerText}>©CopyRights Valência</Text>
+      </View>
+
       {/* Modal de Visita */}
       <Modal
         animationType="slide"
@@ -181,6 +187,16 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  footer: {
+    backgroundColor: '#0D214F',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  footerText: {
+    color: '#fff',
+    fontSize: 12,
   },
 });
 
