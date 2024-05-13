@@ -6,6 +6,6 @@ export const user_login = async data => {
         const result = await api.post("/auth/login", data);
         return result;
     } catch (error) {
-        throw error; // Lança o erro para ser tratado na função de chamada
+        throw error; 
     }
 };

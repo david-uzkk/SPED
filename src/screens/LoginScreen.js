@@ -1,11 +1,11 @@
-// LoginScreen.js
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import PasswordInput from "../components/PasswordInput";
 import { useNavigation } from "@react-navigation/native";
-import { user_login } from "../services/user_api"; 
+import { user_login } from "../services/user_api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -28,8 +28,8 @@ const LoginScreen = () => {
 
       // Se a resposta foi bem-sucedida (status 200)
       if (result.status === 200) {
-        // Salva o token de acesso (se necessário)
-        // AsyncStorage.setItem('AccessToken', result.data);
+        // Salva o token de acesso no AsyncStorage
+        await AsyncStorage.setItem('AccessToken', result.data.token);
         // Navega para a tela Home
         navigation.replace("Home");
       } else {
