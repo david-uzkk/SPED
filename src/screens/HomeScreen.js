@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+// HomeScreen.js
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { Header, Icon } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
+import * as Location from 'expo-location';
 import Escolas from "../data/Escolas";
 import VisitModal from "../components/VisitModal";
 
@@ -12,6 +14,8 @@ const HomeScreen = () => {
   const [visitModalVisible, setVisitModalVisible] = useState(false);
   const [legendModalVisible, setLegendModalVisible] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const openMenu = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -25,6 +29,36 @@ const HomeScreen = () => {
     setSelectedSchool(school);
     setVisitModalVisible(true);
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permissão de acesso à localização negada');
+          return;
+        }
+
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation({
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+          latitudeDelta: 0.04,
+          longitudeDelta: 0.04,
+        });
+      })();
+    }, 1000);
+
+    return () => clearInterval(intervalId); // Limpa o intervalo quando o componente é desmontado
+
+  }, []); // O segundo argumento vazio garante que o useEffect seja executado apenas uma vez, após a montagem do componente
+
+  let text = 'Obtendo localização...';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = 'Localização obtida';
+  }
 
   return (
     <View style={styles.container}>
@@ -47,29 +81,31 @@ const HomeScreen = () => {
 
       {/* Mapa Interativo */}
       <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: -23.625203058058755,
-            longitude: -45.42235136074362,
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.04,
-          }}
-        >
-          {/* Adicionando marcadores para cada escola */}
-          {Escolas.map((school) => (
-            <Marker
-              key={school.id} // Use um identificador único, como o ID da escola
-              coordinate={{
-                latitude: school.latitude,
-                longitude: school.longitude,
-              }}
-              onPress={() => handleMarkerPress(school)}
-              pinColor={
-                school.status === "verde"  ? "green"  : school.status === "amarelo"  ? "yellow"  : school.status === "laranja"  ? "orange"  : "white"}
-            />
-          ))}
-        </MapView>
+        {location ? (
+          <MapView
+            style={styles.map}
+            initialRegion={location}
+          >
+            {/* Adicionando marcadores para cada escola */}
+            {Escolas.map((school) => (
+              <Marker
+                key={school.id} // Use um identificador único, como o ID da escola
+                coordinate={{
+                  latitude: school.latitude,
+                  longitude: school.longitude,
+                }}
+                onPress={() => handleMarkerPress(school)}
+                pinColor={
+                  school.status === "verde" ? "green" :
+                  school.status === "amarelo" ? "yellow" :
+                  school.status === "laranja" ? "orange" : "white"
+                }
+              />
+            ))}
+          </MapView>
+        ) : (
+          <Text>{text}</Text>
+        )}
       </View>
 
       {/* Barra Inferior */}
