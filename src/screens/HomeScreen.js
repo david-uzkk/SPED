@@ -6,8 +6,8 @@ import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
-import Escolas from "../data/Escolas";
 import VisitModal from "../components/VisitModal";
+import { fetchSchools, getSchoolList } from "../data/Schools";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -16,9 +16,10 @@ const HomeScreen = () => {
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [schoolsObject, setSchoolsObject] = useState({}); // Objeto para armazenar os objetos de escola
 
   const openMenu = () => {
-    navigation.dispatch(DrawerActions.openDrawer());
+    navigation.openDrawer(); 
   };
 
   const openPopup = () => {
@@ -32,6 +33,24 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      fetchSchools().then(() => {
+        // Agora você pode obter a lista de escolas
+        const schools = getSchoolList();
+  
+        // Converta a lista de escolas em um objeto, usando, por exemplo, o ID da escola como chave
+        const schoolsObj = {};
+        schools.forEach(school => {
+            schoolsObj[school.id] = {
+                ...school,
+                latitude: parseFloat(school.latitude),
+                longitude: parseFloat(school.longitude)
+            };
+        });        
+  
+        // Defina o estado com o objeto de escolas
+        setSchoolsObject(schoolsObj);
+      });
+
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -43,8 +62,8 @@ const HomeScreen = () => {
         setLocation({
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
-          latitudeDelta: 0.04,
-          longitudeDelta: 0.04,
+          latitudeDelta: 0.03,
+          longitudeDelta: 0.03,
         });
       })();
     }, 1000);
@@ -83,22 +102,24 @@ const HomeScreen = () => {
       <View style={styles.mapContainer}>
         {location ? (
           <MapView
-            style={styles.map}
-            initialRegion={location}
+          style={styles.map}
+          initialRegion={location}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
           >
             {/* Adicionando marcadores para cada escola */}
-            {Escolas.map((school) => (
+            {Object.values(schoolsObject).map((school) => (
               <Marker
                 key={school.id} // Use um identificador único, como o ID da escola
                 coordinate={{
-                  latitude: school.latitude,
-                  longitude: school.longitude,
+                  latitude: parseFloat(school.longitude),
+                  longitude: parseFloat(school.latitude),
                 }}
                 onPress={() => handleMarkerPress(school)}
                 pinColor={
-                  school.status === "verde" ? "green" :
-                  school.status === "amarelo" ? "yellow" :
-                  school.status === "laranja" ? "orange" : "white"
+                  school.id === 1 ? "green" :
+                  school.id === 2 ? "yellow" :
+                  school.id === 3 ? "orange" : "white"
                 }
               />
             ))}
