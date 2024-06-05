@@ -1,14 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { getUserData } from '../services/apis'; // Importar a função getUserData
 
 const ProfileScreen = () => {
-  const navigation = useNavigation(); // Obter a instância de navegação
+  const navigation = useNavigation();
+
+  // Estado para armazenar os dados do usuário
+  const [userData, setUserData] = useState({
+    nome: '',
+    cpf: '',
+    cidade: '',
+    senha: ''
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userDataFromApi = await getUserData();
+        if (userDataFromApi.length > 0) {
+          const user = userDataFromApi[0]; 
+          setUserData({
+            nome: String(user.id || ''),
+            cpf: String(user.cpf || ''),
+            cidade: String(user.city || ''),
+            senha: '' 
+          });
+          console.log('userData:', userData); 
+        }
+      } catch (error) {
+        console.error('Erro ao obter dados do usuário:', error.message);
+      }
+    };
+
+    fetchUserData(); // Chamar a função ao carregar o componente
+  }, []);
 
   const handleSave = () => {
-    // Lógica para salvar as informações do perfil
     console.log('Informações do perfil salvas!');
   };
 
@@ -28,13 +58,14 @@ const ProfileScreen = () => {
       {/* Conteúdo */}
       <View style={styles.content}>
         <View style={styles.profileIconContainer}>
-          <Ionicons name="person-circle-outline" size={100} color="#0D214F" />
+          <Ionicons name="person-circle-outline" size={200} color="#0D214F" />
         </View>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Nome" />
-          <TextInput style={styles.input} placeholder="Email" />
-          <TextInput style={styles.input} placeholder="Telefone" />
-          <TextInput style={styles.input} placeholder="Endereço" />
+          {/* Preencher os TextInput com os dados do usuário */}
+          <TextInput style={styles.input} placeholder="Nome" value={userData.nome} editable={false} />
+          <TextInput style={styles.input} placeholder="CPF" value={userData.cpf} editable={false} />
+          <TextInput style={styles.input} placeholder="Cidade" value={userData.cidade} editable={false} />
+          <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} color="black" />
         </View>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Salvar</Text>
@@ -61,10 +92,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
   },
-  profileText: {
-    color: '#fff',
-    fontSize: 18,
-  },
   profileIconContainer: {
     marginBottom: 30,
   },
@@ -79,6 +106,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginBottom: 10,
+    color: 'black', // Altera a cor do texto para preto
   },
   saveButton: {
     backgroundColor: '#0D214F',

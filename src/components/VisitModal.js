@@ -1,10 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VisitModelScreen = ({ closeModal }) => {
-  const handleSelectManha = () => {
-    console.log('Manhã selecionada');
-    closeModal();
+  const handleSelectManha = async () => {
+    try {
+      cpf = await AsyncStorage.getItem('UserCPF');
+      console.log('CPF:', cpf);
+      console.log('Manhã selecionada');
+      closeModal();
+    } catch (error) {
+      console.error('Erro ao buscar o CPF:', error);
+    }
   };
 
   const handleSelectTarde = () => {
