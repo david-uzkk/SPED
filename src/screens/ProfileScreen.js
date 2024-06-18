@@ -4,46 +4,63 @@ import { Header, Icon } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getUserData } from '../services/apis'; // Importar a função getUserData
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
 
-  // Estado para armazenar os dados do usuário
   const [userData, setUserData] = useState({
     nome: '',
     cpf: '',
     cidade: '',
-    senha: ''
+    telefone: ''
   });
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userDataFromApi = await getUserData();
-        if (userDataFromApi.length > 0) {
-          const user = userDataFromApi[0]; 
+        const savedCpf = await AsyncStorage.getItem('UserCPF');
+        if (!savedCpf) {
+          throw new Error('CPF not found');
+        }
+
+        const usersData = await getUserData();
+        const user = usersData.find(user => user.cpf === savedCpf);
+
+        if (user) {
           setUserData({
-            nome: String(user.id || ''),
+            nome: String(user.name || ''),
             cpf: String(user.cpf || ''),
             cidade: String(user.city || ''),
-            senha: '' 
+            telefone: String(user.phone || '')
           });
-          console.log('userData:', userData); 
+          
+        } else {
+          console.log('User not found');
         }
       } catch (error) {
-        console.error('Erro ao obter dados do usuário:', error.message);
+        console.log('Erro ao obter dados do usuário:', error.message);
       }
     };
 
-    fetchUserData(); // Chamar a função ao carregar o componente
+    fetchUserData(); 
+
+    const intervalId = setInterval(fetchUserData, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleSave = () => {
+    console.log(userData);
     console.log('Informações do perfil salvas!');
   };
 
   const openMenu = () => {
     navigation.openDrawer(); 
+  };
+
+  const getInputStyle = (editable) => {
+    return editable ? styles.input : [styles.input, styles.inputDisabled];
   };
 
   return (
@@ -62,10 +79,10 @@ const ProfileScreen = () => {
         </View>
         <View style={styles.inputContainer}>
           {/* Preencher os TextInput com os dados do usuário */}
-          <TextInput style={styles.input} placeholder="Nome" value={userData.nome} editable={false} />
-          <TextInput style={styles.input} placeholder="CPF" value={userData.cpf} editable={false} />
-          <TextInput style={styles.input} placeholder="Cidade" value={userData.cidade} editable={false} />
-          <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} color="black" />
+          <TextInput style={getInputStyle(false)} placeholder="Nome" value={userData.nome} editable={false} />
+          <TextInput style={getInputStyle(false)} placeholder="CPF" value={userData.cpf} editable={false} />
+          <TextInput style={getInputStyle(true)} placeholder="Cidade" value={userData.cidade} editable={true} />
+          <TextInput style={getInputStyle(true)} placeholder="Telefone" value={userData.telefone} editable={true} />
         </View>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Salvar</Text>
@@ -106,7 +123,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     marginBottom: 10,
-    color: 'black', // Altera a cor do texto para preto
+    color: 'black',
+    backgroundColor: '#fff',
+  },
+  inputDisabled: {
+    backgroundColor: '#e0e0e0', 
   },
   saveButton: {
     backgroundColor: '#0D214F',

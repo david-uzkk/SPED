@@ -50,7 +50,7 @@ const SchoolsScreen = () => {
       <Header
         backgroundColor="#0D214F"
         leftComponent={<Icon name="menu" size={24} color="white" onPress={() => navigation.openDrawer()} />}
-        centerComponent={{ text: 'SPED', style: { color: '#fff', fontSize: 20 } }}
+        centerComponent={{ text: 'Escolas', style: { color: '#fff', fontSize: 20 } }}
       />
 
       {/* Lista de Escolas */}

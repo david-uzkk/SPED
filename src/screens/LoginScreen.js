@@ -31,6 +31,7 @@ const LoginScreen = () => {
         // Salva o token de acesso e o CPF no AsyncStorage
         await AsyncStorage.setItem('AccessToken', result.data.token);
         await AsyncStorage.setItem('UserCPF', username);
+
         // Navega para a tela Home
         navigation.replace("Home");
       } else {

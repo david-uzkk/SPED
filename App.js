@@ -14,7 +14,6 @@ const App = () => {
   if (!fontsLoaded && !error) {
     return null;
   }
-
   return <AppNavigator />;
 };
 

@@ -27,8 +27,7 @@ const FormOccurrenceScreen = () => {
       <Header
         backgroundColor="#0D214F"
         leftComponent={<Icon name="menu" size={24} color="white" onPress={openMenu} />}
-        centerComponent={{ text: 'SPEED', style: { color: '#fff', fontSize: 20 } }}
-        rightComponent={<Icon name="camera" size={24} color="white" />}
+        centerComponent={{ text: 'Formulário', style: { color: '#fff', fontSize: 20 } }}
       />
 
       {/* Informações da Ocorrência */}

@@ -1,29 +1,49 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Camera } from 'expo-camera';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Header, Icon } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 
 const OccurrenceScreen = () => {
-  // Função para lidar com a leitura do QR code
-  const handleBarCodeScanned = ({ data }) => {
-    // Aqui você pode lidar com os dados do QR code lido
-    console.log('QR Code lido:', data);
+  const [code, setCode] = useState('');
+  const navigation = useNavigation();
+
+  const handleVerifyCode = () => {
+    const correctCode = 'ABC123'; 
+    if (code.toUpperCase() === correctCode) {
+      navigation.navigate('Formulário');
+    } else {
+      Alert.alert('Código Incorreto', 'Por favor, tente novamente.');
+    }
+  };
+
+  const openMenu = () => {
+    navigation.openDrawer();
   };
 
   return (
     <View style={styles.container}>
       {/* Barra Superior */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Leitor de QR Code</Text>
-      </View>
+      <Header
+        backgroundColor="#0D214F"
+        leftComponent={<Icon name="menu" size={24} color="white" onPress={openMenu} />}
+        centerComponent={{ text: 'Ocorrência', style: { color: '#fff', fontSize: 20 } }}
+        rightComponent={<Icon name="camera" size={24} color="white" />}
+      />
 
-      {/* Conteúdo Central */}
-      <View style={styles.content}>
-        <Camera
-          style={styles.camera}
-          type={Camera.Constants.Type.back}
-          onBarCodeScanned={handleBarCodeScanned}
+      {/* Input para o Código */}
+      <View style={styles.codeContainer}>
+        <TextInput
+          style={styles.codeInput}
+          placeholder="Digite o código"
+          placeholderTextColor="#ccc"
+          value={code}
+          onChangeText={(text) => setCode(text.toUpperCase())}
+          maxLength={6}
+          autoCapitalize="characters"
         />
-        <Text style={styles.scanInstructions}>Aponte para o QR code para iniciar a leitura</Text>
+        <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyCode}>
+          <Text style={styles.verifyButtonText}>Verificar Código</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Barra Inferior */}
@@ -38,42 +58,86 @@ const OccurrenceScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0D214F',
+    backgroundColor: '#fff',
   },
-  header: {
-    backgroundColor: '#0D214F',
-    paddingTop: 50,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  content: {
+  codeContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  camera: {
-    flex: 1,
-    width: '100%',
+  codeInput: {
+    width: '80%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  scanInstructions: {
+  verifyButton: {
+    backgroundColor: '#0D214F',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  verifyButtonText: {
     color: '#fff',
-    fontSize: 18,
-    marginTop: 20,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  infoContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  infoItem: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  label: {
+    marginRight: 10,
+    fontWeight: 'bold',
+  },
+  value: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 2,
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+    minHeight: 150,
+  },
+  submitButton: {
+    backgroundColor: '#0D214F',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   footer: {
     backgroundColor: '#0D214F',
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   footerText: {
     color: '#fff',
