@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getUserData } from '../services/apis'; // Importar a função getUserData
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -16,39 +16,39 @@ const ProfileScreen = () => {
     telefone: ''
   });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const savedCpf = await AsyncStorage.getItem('UserCPF');
-        if (!savedCpf) {
-          throw new Error('CPF not found');
-        }
-
-        const usersData = await getUserData();
-        const user = usersData.find(user => user.cpf === savedCpf);
-
-        if (user) {
-          setUserData({
-            nome: String(user.name || ''),
-            cpf: String(user.cpf || ''),
-            cidade: String(user.city || ''),
-            telefone: String(user.phone || '')
-          });
-          
-        } else {
-          console.log('User not found');
-        }
-      } catch (error) {
-        console.log('Erro ao obter dados do usuário:', error.message);
+  const fetchUserData = async () => {
+    try {
+      const savedCpf = await AsyncStorage.getItem('UserCPF');
+      if (!savedCpf) {
+        throw new Error('CPF not found');
       }
-    };
 
-    fetchUserData(); 
+      const usersData = await getUserData();
+      const user = usersData.find(user => user.cpf === savedCpf);
 
-    const intervalId = setInterval(fetchUserData, 1000);
+      if (user) {
+        setUserData({
+          nome: String(user.name || ''),
+          cpf: String(user.cpf || ''),
+          cidade: String(user.city || ''),
+          telefone: String(user.phone || '')
+        });
+      } else {
+        console.log('User not found');
+      }
+    } catch (error) {
+      console.log('Erro ao obter dados do usuário:', error.message);
+    }
+  };
 
-    return () => clearInterval(intervalId);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+      const intervalId = setInterval(fetchUserData, 100000);
+
+      return () => clearInterval(intervalId);
+    }, [])
+  );
 
   const handleSave = () => {
     console.log(userData);
@@ -56,7 +56,7 @@ const ProfileScreen = () => {
   };
 
   const openMenu = () => {
-    navigation.openDrawer(); 
+    navigation.openDrawer();
   };
 
   const getInputStyle = (editable) => {
@@ -68,7 +68,7 @@ const ProfileScreen = () => {
       {/* Barra Superior */}
       <Header
         backgroundColor="#0D214F"
-        leftComponent={<Icon name="menu" size={24} color="white" onPress={openMenu} />} 
+        leftComponent={<Icon name="menu" size={24} color="white" onPress={openMenu} />}
         centerComponent={{ text: 'Perfil', style: { color: '#fff', fontSize: 20 } }}
       />
 
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   inputDisabled: {
-    backgroundColor: '#e0e0e0', 
+    backgroundColor: '#e0e0e0',
   },
   saveButton: {
     backgroundColor: '#0D214F',

@@ -1,10 +1,9 @@
-// HomeScreen.js
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { Header, Icon } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
-import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { DrawerActions, useNavigation, useFocusEffect } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import VisitModal from "../components/VisitModal";
 import { fetchSchools, getSchoolList } from "../data/Schools";
@@ -31,46 +30,57 @@ const HomeScreen = () => {
     setVisitModalVisible(true);
   };
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchSchools().then(() => {
-        // Agora você pode obter a lista de escolas
-        const schools = getSchoolList();
-  
-        // Converta a lista de escolas em um objeto, usando, por exemplo, o ID da escola como chave
-        const schoolsObj = {};
-        schools.forEach(school => {
-            schoolsObj[school.id] = {
-                ...school,
-                latitude: parseFloat(school.latitude),
-                longitude: parseFloat(school.longitude)
-            };
-        });        
-  
-        // Defina o estado com o objeto de escolas
-        setSchoolsObject(schoolsObj);
-      });
-
-      (async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setErrorMsg('Permissão de acesso à localização negada');
-          return;
-        }
-
-        let currentLocation = await Location.getCurrentPositionAsync({});
-        setLocation({
-          latitude: currentLocation.coords.latitude,
-          longitude: currentLocation.coords.longitude,
-          latitudeDelta: 0.03,
-          longitudeDelta: 0.03,
+  useFocusEffect(
+    React.useCallback(() => {
+      const intervalId = setInterval(() => {
+        fetchSchools().then(() => {
+          const schools = getSchoolList();
+          const schoolsObj = {};
+          schools.forEach(school => {
+              schoolsObj[school.id] = {
+                  ...school,
+                  latitude: parseFloat(school.longitude),
+                  longitude: parseFloat(school.latitude)
+              };
+          });        
+          setSchoolsObject(schoolsObj);
         });
-      })();
-    }, 1000);
 
-    return () => clearInterval(intervalId); // Limpa o intervalo quando o componente é desmontado
+        (async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            setErrorMsg('Permissão de acesso à localização negada');
+            return;
+          }
 
-  }, []); // O segundo argumento vazio garante que o useEffect seja executado apenas uma vez, após a montagem do componente
+          let currentLocation = await Location.getCurrentPositionAsync({});
+          setLocation({
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
+          });
+        })();
+      }, 1000);
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    }, [])
+  );
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 0:
+        return 'green';
+      case 1:
+        return 'yellow';
+      case 2:
+        return 'orange';
+      default:
+        return 'white';
+    }
+  };
 
   let text = 'Obtendo localização...';
   if (errorMsg) {
@@ -102,25 +112,21 @@ const HomeScreen = () => {
       <View style={styles.mapContainer}>
         {location ? (
           <MapView
-          style={styles.map}
-          initialRegion={location}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
+            style={styles.map}
+            initialRegion={location}
+            showsUserLocation={true}
+            showsMyLocationButton={true}
           >
             {/* Adicionando marcadores para cada escola */}
             {Object.values(schoolsObject).map((school) => (
               <Marker
-                key={school.id} // Use um identificador único, como o ID da escola
+                key={school.id}
                 coordinate={{
                   latitude: parseFloat(school.longitude),
                   longitude: parseFloat(school.latitude),
                 }}
                 onPress={() => handleMarkerPress(school)}
-                pinColor={
-                  school.id === 1 ? "green" :
-                  school.id === 2 ? "yellow" :
-                  school.id === 3 ? "orange" : "white"
-                }
+                pinColor={getStatusColor(school.securityLevel)}
               />
             ))}
           </MapView>
@@ -161,28 +167,18 @@ const HomeScreen = () => {
             <Text style={styles.legendText}>Escola com status verde</Text>
           </View>
           <View style={styles.legendItem}>
-            <View
-              style={[styles.legendMarker, { backgroundColor: "yellow" }]}
-            />
+            <View style={[styles.legendMarker, { backgroundColor: "yellow" }]} />
             <Text style={styles.legendText}>Escola com status amarelo</Text>
           </View>
           <View style={styles.legendItem}>
-            <View
-              style={[styles.legendMarker, { backgroundColor: "orange" }]}
-            />
+            <View style={[styles.legendMarker, { backgroundColor: "orange" }]} />
             <Text style={styles.legendText}>Escola com status laranja</Text>
           </View>
           <View style={styles.legendItem}>
-            <View
-              style={[
-                styles.legendMarker,
-                {
-                  backgroundColor: "white",
-                  borderColor: "black",
-                  borderWidth: 1,
-                },
-              ]}
-            />
+            <View style={[
+              styles.legendMarker,
+              { backgroundColor: "white", borderColor: "black", borderWidth: 1 },
+            ]} />
             <Text style={styles.legendText}>Escola sem status definido</Text>
           </View>
           <TouchableOpacity

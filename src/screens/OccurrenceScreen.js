@@ -10,7 +10,7 @@ const OccurrenceScreen = () => {
   const handleVerifyCode = () => {
     const correctCode = 'ABC123'; 
     if (code.toUpperCase() === correctCode) {
-      navigation.navigate('Formulário');
+      navigation.navigate('Formulario');
     } else {
       Alert.alert('Código Incorreto', 'Por favor, tente novamente.');
     }

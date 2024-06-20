@@ -1,8 +1,7 @@
-// SchoolsScreen.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Modal, TouchableOpacity } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import HorarioModal from '../components/VisitModal';
 import { getSchoolList, fetchSchools } from '../data/Schools'; // Importar a função getSchoolList
 
@@ -11,14 +10,20 @@ const SchoolsScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [escolas, setEscolas] = useState([]); // Usar estado para armazenar as escolas
 
-  // Carregar as escolas ao iniciar a tela
-  useEffect(() => {
-    const loadSchools = async () => {
-      await fetchSchools(); // Buscar as escolas
-      setEscolas(getSchoolList()); // Atualizar o estado com a lista de escolas
-    };
-    loadSchools();
-  }, []);
+  const loadSchools = async () => {
+    await fetchSchools(); // Buscar as escolas
+    setEscolas(getSchoolList()); // Atualizar o estado com a lista de escolas
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadSchools(); // Carregar as escolas ao focar na tela
+
+      const intervalId = setInterval(loadSchools, 10000); // Atualizar as escolas a cada 10 segundos
+
+      return () => clearInterval(intervalId); // Limpar o intervalo quando a tela perder o foco
+    }, [])
+  );
 
   // Renderizar cada item da lista de escolas
   const renderItem = ({ item }) => (
@@ -42,7 +47,7 @@ const SchoolsScreen = () => {
       default:
         return '#000000';
     }
-  };  
+  };
 
   return (
     <View style={styles.container}>

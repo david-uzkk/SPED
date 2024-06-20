@@ -1,4 +1,4 @@
-# Próximas etapas recomendadas:
+# Recomendação:
 Observação: Certifique-se de ter instalado as dependências de react native [aqui](https://reactnative.dev/docs/environment-setup#installing-dependencies)
 
 ### SPED
@@ -15,6 +15,3 @@ Observação: Certifique-se de ter instalado as dependências de react native [a
 3. Escolha o Pixel 3 e escolha o Android 13 Tiramisu(não é o TiramisuPrivacySandbox)
 4. Execute ele e abra o emulador
 5. Após de iniciar usa o android completamente e o projeto usando o npx expo start aperte “a” no terminal para abrir o app no emulador.
-
-https://youtu.be/dB1YAOlMTUI?t=26
-testeeeeeeee

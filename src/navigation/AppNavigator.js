@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RNRestart from 'react-native-restart';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -22,6 +21,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Formulario" component={FormOccurrenceScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
@@ -64,6 +64,11 @@ const AppNavigator = () => {
         <Drawer.Screen name="Perfil" component={ProfileScreen} />
         <Drawer.Screen name="Ocorrência" component={OccurrenceScreen} />
         <Drawer.Screen name="Escolas" component={EscolasScreen} />
+        <Drawer.Screen 
+          name="Formulario" 
+          component={FormOccurrenceScreen} 
+          options={{ drawerItemStyle: { height: 0 } }}
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );
@@ -82,6 +87,7 @@ const styles = StyleSheet.create({
   logoutButtonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
+    marginTop: -10,
     marginBottom: 16,
   },
   logoutButtonLabel: {
