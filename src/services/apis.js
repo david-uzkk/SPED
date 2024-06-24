@@ -50,3 +50,26 @@ export const getUserData = async () => {
         throw error;
     }
 };
+
+export const submitVisit = async ({ visitDate, visitPeriod }) => {
+    try {
+      const token = await AsyncStorage.getItem('AccessToken');
+      if (!token) {
+        throw new Error('Token não encontrado');
+      }
+  
+      const response = await api.post('/home/visit', {
+        visitDate,
+        visitPeriod,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao registrar a visita:', error);
+      throw error;
+    }
+  };

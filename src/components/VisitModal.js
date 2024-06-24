@@ -1,27 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { submitVisit } from '../services/apis';  // Importando a nova função da API
 
 const VisitModelScreen = ({ closeModal }) => {
-  const handleSelectManha = async () => {
+  const handleSelect = async (period) => {
     try {
-      cpf = await AsyncStorage.getItem('UserCPF');
-      console.log('CPF:', cpf);
-      console.log('Manhã selecionada');
+      const cpf = await AsyncStorage.getItem('UserCPF');
+      if (!cpf) throw new Error('CPF não encontrado');
+      
+      const visitDate = new Date();
+      const visitPeriod = period;
+      
+      await submitVisit({ visitDate, visitPeriod });
+
+      console.log(`CPF: ${cpf}`);
+      console.log(`${period} selecionada`);
       closeModal();
     } catch (error) {
-      console.error('Erro ao buscar o CPF:', error);
+      console.error('Erro ao registrar a visita:', error);
     }
-  };
-
-  const handleSelectTarde = () => {
-    console.log('Tarde selecionada');
-    closeModal();
-  };
-
-  const handleSelectNoite = () => {
-    console.log('Noite selecionada');
-    closeModal();
   };
 
   return (
@@ -35,16 +33,15 @@ const VisitModelScreen = ({ closeModal }) => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>Selecione o horário:</Text>
-            <TouchableOpacity style={styles.button} onPress={handleSelectManha}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSelect('morning')}>
               <Text style={styles.buttonText}>Manhã</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleSelectTarde}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSelect('afternoon')}>
               <Text style={styles.buttonText}>Tarde</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleSelectNoite}>
+            <TouchableOpacity style={styles.button} onPress={() => handleSelect('night')}>
               <Text style={styles.buttonText}>Noite</Text>
             </TouchableOpacity>
-            {/* Botão de fechar */}
             <TouchableOpacity style={[styles.button, { backgroundColor: 'red' }]} onPress={closeModal}>
               <Text style={styles.buttonText}>Fechar</Text>
             </TouchableOpacity>
